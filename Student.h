@@ -1,6 +1,5 @@
 #pragma once
-#include <iostream>
-#include <string>
+#include "Course.h"
 using namespace std;
 
 class Student

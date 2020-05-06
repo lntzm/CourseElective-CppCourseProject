@@ -2,12 +2,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <iomanip>
 using namespace std;
 
 class CourseNode
 {
-	friend ostream& operator << (ostream&, CourseNode& node);                      //声明重载“<<”
-	friend istream& operator >> (istream&, CourseNode& node);
+	friend ostream& operator << (ostream&, CourseNode& node);                  //声明重载“<<”
+	friend istream& operator >> (istream&, CourseNode& node);	               //声明重载“>>”
 	friend class Course;
 private:
 	int id;				// 课程编号
@@ -26,26 +27,26 @@ public:
 
 class Course
 {
-	friend class Admin;
 	friend class Student;
-	                     //声明重载“>>”
-	/*friend bool CheckInput(istream&);*/
 private:
 	CourseNode* m_head;
 
 public:
 	Course(const char*);
 	~Course();
-	void FindById(int);
-	void FindInInt(int);
-	void FindInFloat(float);
-	void FindInString(string);
+	void Display();
+	void DisplayTitle();
+	void AddCourse(const char*);
 	void WriteFile(const char*);			// 链表写入文件
 	void ReadFile(const char*);				// 读取文件中的信息建立链表
-	void AddCourse(const char* filename);
-	void Display();
-	
-
+	void Find();
+	void FindMenu(const char*);
+	void FindEditDelById(int, const char*);
+	void FindInInt(int, const char*);
+	void FindInFloat(int, const char*);
+	void FindInString(int, const char*);
+	void Edit(CourseNode*);
+	void EditMenu(int, const char*);
 };
 
-void CheckInput(istream&);
+bool CheckInput(istream&);
