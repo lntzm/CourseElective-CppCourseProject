@@ -4,8 +4,12 @@
 #include <fstream>
 using namespace std;
 
-struct CourseNode
+class CourseNode
 {
+	friend ostream& operator << (ostream&, CourseNode& node);                      //声明重载“<<”
+	friend istream& operator >> (istream&, CourseNode& node);
+	friend class Course;
+private:
 	int id;				// 课程编号
 	string name;		// 课程名称
 	string property;	// 课程性质
@@ -15,14 +19,17 @@ struct CourseNode
 	float credits;		// 学分
 	string semester;	// 开课学期
 	CourseNode* next;
+public:
+	CourseNode();
+	~CourseNode();
 };
 
 class Course
 {
 	friend class Admin;
 	friend class Student;
-	friend ostream& operator << (ostream&, CourseNode& node);                      //声明重载“<<”
-	friend istream& operator >> (istream&, CourseNode& node);                      //声明重载“>>”
+	                     //声明重载“>>”
+	/*friend bool CheckInput(istream&);*/
 private:
 	CourseNode* m_head;
 
@@ -34,6 +41,11 @@ public:
 	void FindInFloat(float);
 	void FindInString(string);
 	void WriteFile(const char*);			// 链表写入文件
-	void ReadFile(const char*)				// 读取文件中的信息建立链表
+	void ReadFile(const char*);				// 读取文件中的信息建立链表
+	void AddCourse(const char* filename);
+	void Display();
+	
 
 };
+
+void CheckInput(istream&);
