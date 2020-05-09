@@ -11,7 +11,7 @@ class CourseNode
 	friend istream& operator >> (istream&, CourseNode& node);	               //声明重载“>>”
 	friend class Course;
 	friend class Student;
-private:
+protected:
 	int id;				// 课程编号
 	string name;		// 课程名称
 	string property;	// 课程性质
@@ -28,18 +28,17 @@ public:
 
 class Course
 {
-	friend class Student;
-private:
+protected:
 	CourseNode* m_head;
 
 public:
 	Course(const char*);
 	~Course();
-	void Display();
+	virtual void Display();
 	void DisplayTitle();
 	void AddCourse(const char*);
-	void WriteFile(const char*);			// 链表写入文件
-	void ReadFile(const char*);				// 读取文件中的信息建立链表
+	virtual void WriteFile(const char*);			// 链表写入文件
+	virtual void ReadFile(const char*);				// 读取文件中的信息建立链表
 	void Find();
 	void FindMenu(const char*);
 	void FindEditDelById(int, const char*);

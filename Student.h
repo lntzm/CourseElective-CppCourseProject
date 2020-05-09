@@ -2,20 +2,22 @@
 #include "Course.h"
 using namespace std;
 
-class Student
+class Student : public Course
 {
 private:
-	int id;
-	string name;
-	CourseNode* stuhead;
+	int stuid;
+	string stuname;
+	CourseNode* m_head;
 
 public:
-	Student(Course, const char*);
+	Student(const char* stufile);
 	~Student();
 	void Login();
 	string GetName();
-	void Display(Course);
+	void Display();
 	void SelectCourse();
 	void DisselectCourse();
 	void CheckSelection();
 };
+
+

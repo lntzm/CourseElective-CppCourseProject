@@ -87,6 +87,9 @@ void AdminMenu(const char* filename)
 		case 1:
 			OperationMenu("管理员", "查看课程");
 			course.Display();
+			cout << "\n回车或输入任意字符返回管理员主界面。" << endl;
+			getchar();
+			getchar();
 			break;
 		case 2:
 			OperationMenu("管理员", "添加课程");
@@ -115,7 +118,8 @@ void AdminMenu(const char* filename)
 
 void StuMenu(const char* filename)
 {
-	Student student;
+	const char* stufile = "student.txt";
+	Student student(stufile);
 	student.Login();
 	string name = student.GetName();
 	while (1)
@@ -147,9 +151,20 @@ void StuMenu(const char* filename)
 		switch (choice)
 		{
 		case 1:
-			OperationMenu("学生", "查看课程");
-			course.Display();
+		{
+			bool x = 1;
+			while (x)
+			{
+				OperationMenu("学生", "查看课程");
+				student.Display();
+				cout << "\n还需要继续查看吗？(1. 继续；0. 返回学生主界面)";
+			inputX:
+				cin >> x;
+				if (CheckInput(cin))
+					goto inputX;
+			}
 			break;
+		}
 		case 2:
 			OperationMenu("学生", "查找课程");
 			course.Find();
@@ -176,7 +191,7 @@ void OperationMenu(const char* usr, const char* optname)
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
-	cout << "\t\t\t▏当前位置：" << setw(6) << usr << ">"
+	cout << "\t\t\t▏当前位置：" << left << setw(6) << usr << ">"
 		<< left << setw(8) << optname << "                   ▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;

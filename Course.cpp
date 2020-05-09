@@ -170,9 +170,6 @@ void Course::Display()
 		cout << *currentNode << endl;
 		currentNode = currentNode->next;
 	}
-	cout << "\n输入任意字符返回管理员主界面。" << endl;
-	getchar();
-	getchar();
 }
 
 void Course::DisplayTitle()
