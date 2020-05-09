@@ -10,6 +10,7 @@ class CourseNode
 	friend ostream& operator << (ostream&, CourseNode& node);                  //声明重载“<<”
 	friend istream& operator >> (istream&, CourseNode& node);	               //声明重载“>>”
 	friend class Course;
+	friend class Student;
 private:
 	int id;				// 课程编号
 	string name;		// 课程名称

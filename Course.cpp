@@ -521,91 +521,89 @@ void Course::Edit(CourseNode* currentNode)
 	bool x = 1;
 	string temp;
 	int choice;
+	while (x)
 	{
-		while (x)
+		cout << "请选择要编辑的内容：" << endl;
+		cout << "1. 课程编号\t 2. 课程名称\n"
+			<< "3. 课程性质\t 4. 总学时  \n"
+			<< "5. 授课学时\t 6. 实验学时\n"
+			<< "7. 学分    \t 8.开课学期\n"
+			<< "0. 取消编辑，返回" << endl;
+	inputChoice:
+		cin >> choice;
+		if (CheckInput(cin))
+			goto inputChoice;
+		switch (choice)
 		{
-			cout << "请选择要编辑的内容：" << endl;
-			cout << "1. 课程编号\t 2. 课程名称\n"
-				<< "3. 课程性质\t 4. 总学时  \n"
-				<< "5. 授课学时\t 6. 实验学时\n"
-				<< "7. 学分    \t 8.开课学期\n"
-				<< "0. 取消编辑，返回" << endl;
-		inputChoice:
-			cin >> choice;
+		case 0:
+			return;
+
+		case 1:
+			EditMenu(currentNode->id, "课程编号");
+		inputId:
+			cout << "请输入课程编号："; cin >> currentNode->id;
 			if (CheckInput(cin))
-				goto inputChoice;
-			switch (choice)
-			{
-			case 0:
-				return;
+				goto inputId;
+			break;
 
-			case 1:
-				EditMenu(currentNode->id, "课程编号");
-			inputId:
-				cout << "请输入课程编号："; cin >> currentNode->id;
-				if (CheckInput(cin))
-					goto inputId;
-				break;
+		case 2:
+			EditMenu(currentNode->id, "课程名称");
+			cout << "请输入课程名称："; cin >> currentNode->name;
+			break;
 
-			case 2:
-				EditMenu(currentNode->id, "课程名称");
-				cout << "请输入课程名称："; cin >> currentNode->name;
-				break;
+		case 3:
+			EditMenu(currentNode->id, "课程性质");
+			cout << "请输入课程性质："; cin >> currentNode->property;
+			break;
 
-			case 3:
-				EditMenu(currentNode->id, "课程性质");
-				cout << "请输入课程性质："; cin >> currentNode->property;
-				break;
-
-			case 4:
-				EditMenu(currentNode->id, "总学时");
-			inputTotaltime:
-				cout << "请输入总学时："; cin >> currentNode->totaltime;
-				if (CheckInput(cin))
-					goto inputTotaltime;
-				break;
-
-			case 5:
-				EditMenu(currentNode->id, "授课学时");
-			inputClasstime:
-				cout << "请输入授课学时："; cin >> currentNode->classtime;
-				if (CheckInput(cin))
-					goto inputClasstime;
-				break;
-
-			case 6:
-				EditMenu(currentNode->id, "实验学时");
-			inputLabtime:
-				cout << "请输入实验或上机学时："; cin >> currentNode->labtime;
-				if (CheckInput(cin))
-					goto inputLabtime;
-				break;
-
-			case 7:
-				EditMenu(currentNode->id, "学分");
-			inputCredits:
-				cout << "请输入学分："; cin >> currentNode->credits;
-				if (CheckInput(cin))
-					goto inputCredits;
-				break;
-
-			case 8:
-				EditMenu(currentNode->id, "开课学期");
-				cout << "请输入开课学期："; cin >> currentNode->semester;
-				break;
-
-			default:
-				cout << "输入有误，请输入0~8的数字。" << endl;
-				cin.clear();
-				cin.ignore(1024, '\n');		// 清除缓冲区
-				goto inputChoice;			// 重新输入
-			}
-			cout << "\n已完成当前项的编辑，还需要编辑其他项吗？（0. 不需要；1. 需要）" << endl;
-		inputX:
-			cin >> x;
+		case 4:
+			EditMenu(currentNode->id, "总学时");
+		inputTotaltime:
+			cout << "请输入总学时："; cin >> currentNode->totaltime;
 			if (CheckInput(cin))
-				goto inputX;
+				goto inputTotaltime;
+			break;
+
+		case 5:
+			EditMenu(currentNode->id, "授课学时");
+		inputClasstime:
+			cout << "请输入授课学时："; cin >> currentNode->classtime;
+			if (CheckInput(cin))
+				goto inputClasstime;
+			break;
+
+		case 6:
+			EditMenu(currentNode->id, "实验学时");
+		inputLabtime:
+			cout << "请输入实验或上机学时："; cin >> currentNode->labtime;
+			if (CheckInput(cin))
+				goto inputLabtime;
+			break;
+
+		case 7:
+			EditMenu(currentNode->id, "学分");
+		inputCredits:
+			cout << "请输入学分："; cin >> currentNode->credits;
+			if (CheckInput(cin))
+				goto inputCredits;
+			break;
+
+		case 8:
+			EditMenu(currentNode->id, "开课学期");
+			cout << "请输入开课学期："; cin >> currentNode->semester;
+			break;
+
+		default:
+			cout << "输入有误，请输入0~8的数字。" << endl;
+			cin.clear();
+			cin.ignore(1024, '\n');		// 清除缓冲区
+			goto inputChoice;			// 重新输入
 		}
+		cout << "\n已完成当前项的编辑，还需要编辑其他项吗？（0. 不需要；1. 需要）" << endl;
+	inputX:
+		cin >> x;
+		if (CheckInput(cin))
+			goto inputX;
 	}
 }
 

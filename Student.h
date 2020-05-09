@@ -7,11 +7,14 @@ class Student
 private:
 	int id;
 	string name;
-	int courseid;
+	CourseNode* stuhead;
 
 public:
-	Student();
+	Student(Course, const char*);
 	~Student();
+	void Login();
+	string GetName();
+	void Display(Course);
 	void SelectCourse();
 	void DisselectCourse();
 	void CheckSelection();
