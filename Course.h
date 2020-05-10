@@ -7,8 +7,8 @@ using namespace std;
 
 class CourseNode
 {
-	friend ostream& operator << (ostream&, CourseNode& node);                  //声明重载“<<”
-	friend istream& operator >> (istream&, CourseNode& node);	               //声明重载“>>”
+	friend ostream& operator << (ostream&, CourseNode& node);          // 重载<<
+	friend istream& operator >> (istream&, CourseNode& node);	       // 重载>>
 	friend class Course;
 	friend class Student;
 protected:
@@ -23,7 +23,7 @@ protected:
 	CourseNode* next;
 public:
 	CourseNode();
-	~CourseNode();
+	virtual ~CourseNode();
 };
 
 class Course
@@ -37,8 +37,8 @@ public:
 	virtual void Display();
 	void DisplayTitle();
 	void AddCourse(const char*);
-	virtual void WriteFile(const char*);			// 链表写入文件
-	virtual void ReadFile(const char*);				// 读取文件中的信息建立链表
+	void WriteFile(const char*);			// 链表写入文件
+	void ReadFile(const char*);				// 读取文件中的信息建立链表
 	void Find();
 	void FindMenu(const char*);
 	void FindEditDelById(int, const char*);

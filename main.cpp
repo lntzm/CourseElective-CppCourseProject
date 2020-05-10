@@ -87,7 +87,7 @@ void AdminMenu(const char* filename)
 		case 1:
 			OperationMenu("管理员", "查看课程");
 			course.Display();
-			cout << "\n回车或输入任意字符返回管理员主界面。" << endl;
+			cout << "回车或输入任意字符返回管理员主界面。" << endl;
 			getchar();
 			getchar();
 			break;
@@ -118,9 +118,9 @@ void AdminMenu(const char* filename)
 
 void StuMenu(const char* filename)
 {
-	const char* stufile = "student.txt";
-	Student student(stufile);
+	Student student;
 	student.Login();
+	student.Init();
 	string name = student.GetName();
 	while (1)
 	{
@@ -156,7 +156,7 @@ void StuMenu(const char* filename)
 			while (x)
 			{
 				OperationMenu("学生", "查看课程");
-				student.Display();
+				student.DisplayMore();
 				cout << "\n还需要继续查看吗？(1. 继续；0. 返回学生主界面)";
 			inputX:
 				cin >> x;

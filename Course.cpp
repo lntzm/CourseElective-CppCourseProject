@@ -170,10 +170,12 @@ void Course::Display()
 		cout << *currentNode << endl;
 		currentNode = currentNode->next;
 	}
+	cout << endl;
 }
 
 void Course::DisplayTitle()
 {
+	cout << endl;
 	cout << left << setw(10) << "课程编号" << left << setw(20) << "课程名称"
 		<< left << setw(10) << "课程性质" << left << setw(8) << "总学时"
 		<< left << setw(10) << "授课学时" << left << setw(10) << "实验学时"
@@ -198,15 +200,13 @@ void Course::AddCourse(const char* filename)
 		if (CheckInput(cin))
 			goto inputX1;
 	}
-	cout << "添加完成，是否保存到课程文件？（0. 不保存；1. 保存）\n提示：如果不保存，数据会丢失。" << endl;
+	cout << "添加完成，是否保存？（0. 不保存；1. 保存）" << endl;
 inputX2:
 	cin >> x;
 	if (CheckInput(cin))
 		goto inputX2;
 	if (x)
-	{
 		WriteFile(filename);
-	}
 }
 
 void Course::Find()
@@ -311,11 +311,17 @@ void Course::FindEditDelById(int n, const char* filename)
 		int input;
 		CourseNode* currentNode = m_head->next, * temp = m_head;
 		
-		cout << "请输入要" << optname << "的课程编号：";
+		cout << "请输入要" << optname << "的课程编号：（输入0查看所有课程）";
 	inputInput:
 		cin >> input;
 		if (CheckInput(cin))
 			goto inputInput;
+		if (!input)
+		{
+			Course::Display();
+			cout << "现在请输入要" << optname << "的课程编号：";
+			goto inputInput;
+		}
 		DisplayTitle();
 		while (currentNode != NULL)
 		{
@@ -327,22 +333,22 @@ void Course::FindEditDelById(int n, const char* filename)
 				if (n == 1)			// 编辑课程
 				{
 					bool y;
-					cout << "确认要编辑该课程吗？（0. 否；1. 确认编辑）";
+					cout << "\n确认要编辑该课程吗？（0. 否；1. 确认编辑）";
 				inputY1:
 					cin >> y;
 					if (CheckInput(cin))
 						goto inputY1;
-					if (y == true)
+					if (y)
 					{
 						Edit(currentNode);
+						WriteFile(filename);
 					}
-					WriteFile(filename);
 				}
 
 				if (n == 2)			// 删除课程
 				{
 					bool y;
-					cout << "确认要删除该课程吗？（0. 否；1. 确认删除）";
+					cout << "\n确认要删除该课程吗？（0. 否；1. 确认删除）";
 				inputY2:
 					cin >> y;
 					if (CheckInput(cin))
@@ -360,9 +366,7 @@ void Course::FindEditDelById(int n, const char* filename)
 			currentNode = currentNode->next;
 		}
 		if (flag)
-		{
-			cout << "\n未找到id为" << input << "的这门课!" << endl;
-		}
+			cout << "\n未找到编号为" << input << "的这门课!" << endl;
 		cout << "\n当前操作已完成，还需要继续" << optname
 			<< "吗？（0. 返回；1. 继续" << optname << "）" << endl;
 	inputX:
@@ -430,9 +434,7 @@ inputInput:
 		}
 	}
 	if (flag)
-	{
 		cout << "\n未找到"<<optname<<"为" << input << "的这门课!" << endl;
-	}
 }
 
 void Course::FindInFloat(int choice, const char* optname)
