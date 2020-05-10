@@ -26,7 +26,7 @@ Course::Course(const char* filename)
 	ifstream ifs(filename);
 	if (!ifs)				// 文件不存在
 	{
-		cout << "未发现课程文件！系统将自动创建" << filename << endl;
+		cout << "未发现"<<filename<<"！系统将自动创建此文件" << endl;
 		WriteFile(filename);
 		cout << filename << "创建成功!\n" << endl;
 	}
@@ -286,7 +286,7 @@ void Course::FindMenu(const char* optname)
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
-	cout << "\t\t\t▏当前位置：管理员>查找课程>" 
+	cout << "\t\t\t▏当前位置：用户>查找课程>" 
 		<<setw(10)<< optname << "        ▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
@@ -353,7 +353,7 @@ void Course::FindEditDelById(int n, const char* filename)
 					cin >> y;
 					if (CheckInput(cin))
 						goto inputY2;
-					if (y == true)
+					if (y)
 					{
 						temp->next = currentNode->next;
 						delete currentNode;
@@ -611,7 +611,7 @@ void Course::EditMenu(int id, const char* optname)
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
-	cout << "\t\t\t▏当前位置：管理员>编辑课程>" << setw(9) << id << "<"
+	cout << "\t\t\t▏当前位置：用户>编辑课程>" << setw(9) << id << "<"
 		<< setw(8) << optname << " ▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;

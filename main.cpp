@@ -3,8 +3,8 @@
 using namespace std;
 
 void Welcome();
-void AdminMenu(const char*);
-void StuMenu(const char*);
+void AdminMenu(Course&, const char*);
+void StuMenu(Course&);
 void OperationMenu(const char*, const char*);
 
 
@@ -17,6 +17,8 @@ int main()
 
 void Welcome()
 {
+	const char* filename = "courses.txt";
+	Course course(filename);
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
@@ -31,7 +33,6 @@ void Welcome()
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 	
-	const char* filename = "courses.txt";
 	int choice;
 inputChoice:
 	cin >> choice;
@@ -41,11 +42,11 @@ inputChoice:
 	{
 	case 1:
 		system("cls");
-		AdminMenu(filename);
+		AdminMenu(course, filename);
 		break;
 	case 2:
 		system("cls");
-		StuMenu(filename);
+		StuMenu(course);
 		break;
 	case 0: exit(0);
 	default:
@@ -54,13 +55,11 @@ inputChoice:
 	}
 }
 
-void AdminMenu(const char* filename)
+void AdminMenu(Course& course, const char* filename)
 {
 	while (1)
 	{
 		system("cls");
-		Course course(filename);
-		
 		cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 		cout << "\t\t\t▏                                            ▕" << endl;
 		cout << "\t\t\t▏           管理员用户，欢迎您！             ▕" << endl;
@@ -116,20 +115,19 @@ void AdminMenu(const char* filename)
 	}
 }
 
-void StuMenu(const char* filename)
+void StuMenu(Course& course)
 {
+	system("cls");
 	Student student;
 	student.Login();
-	student.Init();
-	string name = student.GetName();
+	string temp = student.stuid + ".txt";
+	const char* stufile = temp.c_str();
+	Course stucourse(stufile);
 	while (1)
 	{
-		system("cls");
-		Course course(filename);
-
 		cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 		cout << "\t\t\t▏                                            ▕" << endl;
-		cout << "\t\t\t▏           " << right << setw(6) << name
+		cout << "\t\t\t▏           " << right << setw(6) << student.stuname
 			<< "同学，欢迎您！             ▕" << endl;
 		cout << "\t\t\t▏                                            ▕" << endl;
 		cout << "\t\t\t▏▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▕" << endl;
@@ -156,26 +154,30 @@ void StuMenu(const char* filename)
 			while (x)
 			{
 				OperationMenu("学生", "查看课程");
-				student.DisplayMore();
+				student.Display(course, stucourse);
 				cout << "\n还需要继续查看吗？(1. 继续；0. 返回学生主界面)";
 			inputX:
 				cin >> x;
 				if (CheckInput(cin))
 					goto inputX;
+				system("cls");
 			}
 			break;
 		}
 		case 2:
 			OperationMenu("学生", "查找课程");
 			course.Find();
+			system("cls");
 			break;
 		case 3:
 			OperationMenu("学生", "选课");
-			student.SelectCourse();
+			student.SelectCourse(course, stucourse);
+			system("cls");
 			break;
 		case 4:
 			OperationMenu("学生", "退课");
-			student.DisselectCourse();
+			student.DisselectCourse(stucourse);
+			system("cls");
 			break;
 		case 0:
 			return;

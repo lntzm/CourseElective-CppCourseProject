@@ -23,18 +23,18 @@ protected:
 	CourseNode* next;
 public:
 	CourseNode();
-	virtual ~CourseNode();
+	~CourseNode();
 };
 
 class Course
 {
+	friend class Student;
 protected:
 	CourseNode* m_head;
-
 public:
 	Course(const char*);
 	~Course();
-	virtual void Display();
+	void Display();
 	void DisplayTitle();
 	void AddCourse(const char*);
 	void WriteFile(const char*);			// 链表写入文件
