@@ -8,48 +8,28 @@ CourseNode::CourseNode()
 }
 CourseNode::~CourseNode()
 {
-	//id = 0;
-	//name = "";
-	//property = "";
-	//totaltime = 0;
-	//classtime = 0;
-	//labtime = 0;
-	//credits = 0;
-	//semester = "";
 	next = NULL;
 }
 
 Course::Course(const char* filename)
 {
 	m_head = new CourseNode;
-	m_head->next = NULL;
+	m_head->next = NULL;			// 申请内存，初始化链表
 	ifstream ifs(filename);
-	if (!ifs)				// 文件不存在
+	if (!ifs)						// 文件不存在，创建文件
 	{
 		cout << "未发现"<<filename<<"！系统将自动创建此文件" << endl;
 		WriteFile(filename);
 		cout << filename << "创建成功!\n" << endl;
 	}
-	else
-	{
+	else						   // 文件存在，读取文件
 		ReadFile(filename);
-	}
 }
 
-Course::~Course()					//析构，释放申请的内存
+Course::~Course()					// 析构，释放申请的内存
 {
-	//CourseNode* p = m_head->next, * temp;
-	//while (p != NULL)
-	//{
-	//	temp = p;
-	//	p = p->next;
-	//	delete temp;
-	//}
-	//delete m_head;
-	//m_head = NULL;
-
 	CourseNode* currentNode = m_head->next;
-	while (currentNode != NULL)
+	while (currentNode != NULL)		// 删除所有节点
 	{
 		CourseNode* temp = currentNode->next;
 		delete currentNode;
@@ -57,22 +37,22 @@ Course::~Course()					//析构，释放申请的内存
 	}
 	m_head->next = NULL;
 	delete m_head;
-	m_head = NULL;
+	m_head = NULL;					// 链表头置NULL
 }
 
 void Course::WriteFile(const char* filename)
 {
 	CourseNode* p = m_head->next;
 	ofstream ofs(filename);
-	if (!ofs)
+	if (!ofs)						// 可写打开失败，退出程序
 	{
 		cout << "文件以输出流方式打开或创建失败，请检查。" << endl;
 		system("pause");
 		exit(0);
 	}
-	if (p == NULL)
+	if (p == NULL)					// p==NULL，为空文件，此时为创建文件，无需写入
 		return;
-	while (p != NULL)
+	while (p != NULL)				// 链表写入文件
 	{
 		ofs << p->id << '\t' << p->name << '\t' << p->property << '\t'
 			<< p->totaltime << '\t' << p->classtime << '\t' << p->labtime << '\t'
@@ -93,7 +73,7 @@ void Course::ReadFile(const char* filename)
 		exit(0);
 	}
 	CourseNode* temp = m_head;
-	while (ifs.peek() != EOF)		//判断是否读取到文件末尾了 采用这个peek函数而不采用ifs.eof()是防止文件为空时还进入循环
+	while (ifs.peek() != EOF)		// 没有到文件末尾时。采用peek()而非ifs.eof()，防止文件为空时进入循环
 	{
 		CourseNode* p = new CourseNode;
 		ifs >> p->id >> ws
@@ -107,11 +87,11 @@ void Course::ReadFile(const char* filename)
 
 		temp->next = p;
 		p->next = NULL;
-		temp = p;
+		temp = p;				// 指向下一节点
 	}
 }
 
-istream& operator >> (istream& input, CourseNode& node)
+istream& operator >> (istream& input, CourseNode& node)		// 重载，用于输入CourseNode类，语法糖
 {
 inputId:
 	cout << "请输入课程编号："; input >> node.id;
@@ -139,7 +119,7 @@ inputCredits:
 	return input;
 }
 
-ostream& operator << (ostream& output, CourseNode& node)
+ostream& operator << (ostream& output, CourseNode& node)	// 重载，用于输出CourseNode类，语法糖
 {
 	cout << left << setw(10) << node.id << left << setw(20) << node.name
 		<< left << setw(10) << node.property << left << setw(8) << node.totaltime
@@ -158,22 +138,22 @@ bool CheckInput(istream& input)
 		cout << "输入字符不合法，请重试。" << endl;
 		return 1;
 	}
-	return 0;
+	return 0;				// 输入正确，返回false
 }
 
 void Course::Display()
 {
 	DisplayTitle();
 	CourseNode* currentNode = m_head->next;
-	while (currentNode != NULL)
+	while (currentNode != NULL)		// 遍历链表，输出
 	{
-		cout << *currentNode << endl;
+		cout << *currentNode << endl;	// <<已被重载
 		currentNode = currentNode->next;
 	}
 	cout << endl;
 }
 
-void Course::DisplayTitle()
+void Course::DisplayTitle()			// 输出表头标题
 {
 	cout << endl;
 	cout << left << setw(10) << "课程编号" << left << setw(20) << "课程名称"
@@ -193,7 +173,7 @@ void Course::AddCourse(const char* filename)
 		CourseNode* newNode = new CourseNode;       // 创建新节点
 		cin >> *newNode;							// 输入数据，>>已被重载
 		m_head->next = newNode;
-		newNode->next = temp;
+		newNode->next = temp;						// 将newNode插在链表的头
 		cout << "还要继续添加吗？（0. 不添加了；1. 继续添加）" << endl;
 	inputX1:
 		cin >> x;
@@ -205,7 +185,7 @@ inputX2:
 	cin >> x;
 	if (CheckInput(cin))
 		goto inputX2;
-	if (x)
+	if (x)						// 是否写入文件，即保存数据
 		WriteFile(filename);
 }
 
@@ -213,7 +193,6 @@ void Course::Find()
 {
 	int choice;
 	bool x = 1;
-
 	while (x)
 	{
 		cout << "请选择查找方式：" << endl;
@@ -223,7 +202,7 @@ void Course::Find()
 			 << "7. 按学分    \t 8.按开课学期\n"
 			 << "0. 不查找了，返回" << endl;
 	inputChoice:
-		cin >> choice;
+		cin >> choice;				// 选择查找方式
 		if (CheckInput(cin))			
 			goto inputChoice;
 		switch (choice)
@@ -231,7 +210,9 @@ void Course::Find()
 		case 0:
 			return;
 		case 1:
-			goto findById;
+			FindEditDelById(0, "");
+			// 跳过下方输出语句，继续循环
+			continue;				// break是对swtich，continue是对while
 		case 2:
 			FindMenu("按课程名称");
 			FindInString(choice, "课程名称");
@@ -273,12 +254,6 @@ void Course::Find()
 			goto inputX;
 
 	}
-	while (0)			// 确保正常情况程序跳过执行该语句，只有goto能够访问
-	{
-	findById:
-		FindEditDelById(0, "");
-	}
-	
 }
 
 void Course::FindMenu(const char* optname)
@@ -305,14 +280,14 @@ void Course::FindEditDelById(int n, const char* filename)
 	}
 	while (x)
 	{
-		if (!n)
+		if (!n)			// n == 0，查找模式
 			FindMenu("按课程编号");
-		bool flag = 1;
+		bool flag = 1;		// 标志位，判断是否找到了数据
 		int input;
 		CourseNode* currentNode = m_head->next, * temp = m_head;
 		
 		cout << "请输入要" << optname << "的课程编号：（输入0查看所有课程）";
-	inputInput:
+	inputInput:				
 		cin >> input;
 		if (CheckInput(cin))
 			goto inputInput;
@@ -367,6 +342,10 @@ void Course::FindEditDelById(int n, const char* filename)
 		}
 		if (flag)
 			cout << "\n未找到编号为" << input << "的这门课!" << endl;
+		if (!n)
+			cout << "\n查找完毕，还需要继续按课程编号进行查找吗？"
+			<< "（0. 返回选择查找方式；1. 继续查找课程编号）" << endl;
+		else
 		cout << "\n当前操作已完成，还需要继续" << optname
 			<< "吗？（0. 返回；1. 继续" << optname << "）" << endl;
 	inputX:
