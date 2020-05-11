@@ -2,12 +2,6 @@
 #include "Student.h"
 using namespace std;
 
-void Welcome();
-void AdminMenu(Course&, const char*);
-void StuMenu(Course&);
-void OperationMenu(const char*, const char*);
-
-
 int main()
 {
 	while (1)
@@ -17,7 +11,7 @@ int main()
 
 void Welcome()
 {
-	const char* filename = "courses.txt";
+	const char* filename = "courses.txt";			// 课程文件命名
 	Course course(filename);
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
@@ -34,24 +28,26 @@ void Welcome()
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 	
 	int choice;
-inputChoice:
-	cin >> choice;
-	if (CheckInput(cin))
-		goto inputChoice;
-	switch (choice)
+	while (1)
 	{
-	case 1:
-		system("cls");
-		AdminMenu(course, filename);
-		break;
-	case 2:
-		system("cls");
-		StuMenu(course);
-		break;
-	case 0: exit(0);
-	default:
-		cout << "请输入0~2，其他数字无效。" << endl;
-		goto inputChoice;
+		cin >> choice;
+		if (CheckInput(cin))
+			continue;
+		switch (choice)
+		{
+		case 1:
+			system("cls");
+			AdminMenu(course, filename);
+			return;			// return是为了跳出while循环
+		case 2:
+			system("cls");
+			StuMenu(course, filename);
+			return;
+		case 0: exit(0);
+		default:
+			cout << "请输入0~2，其他数字无效。" << endl;
+			continue;
+		}
 	}
 }
 
@@ -77,7 +73,7 @@ void AdminMenu(Course& course, const char* filename)
 		cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 			
 		int choice;
-	inputChoice:
+	inputChoice:				// 为方便下方switch中default的调用，使用goto
 		cin >> choice;
 		if (CheckInput(cin))
 			goto inputChoice;
@@ -85,9 +81,9 @@ void AdminMenu(Course& course, const char* filename)
 		{
 		case 1:
 			OperationMenu("管理员", "查看课程");
-			course.Display();
+			course.Display(filename);
 			cout << "回车或输入任意字符返回管理员主界面。" << endl;
-			getchar();
+			getchar();			// 等待输入字符
 			getchar();
 			break;
 		case 2:
@@ -96,7 +92,7 @@ void AdminMenu(Course& course, const char* filename)
 			break;
 		case 3:
 			OperationMenu("管理员", "查找课程");
-			course.Find();
+			course.Find(filename);
 			break;
 		case 4:
 			OperationMenu("管理员", "编辑课程");
@@ -110,18 +106,19 @@ void AdminMenu(Course& course, const char* filename)
 			return;
 		default:
 			cout << "请输入数字0~5，其他数字无效。" << endl;
-			goto inputChoice;
+			// switch外已经有一层while，再使用循环不方便break出循环，需要增加判断的变量
+			goto inputChoice;			// 因此这里采用goto，且并没有降低可读性
 		}
 	}
 }
 
-void StuMenu(Course& course)
+void StuMenu(Course& course, const char* filename)
 {
 	system("cls");
 	Student student;
-	student.Login();
-	string temp = student.stuid + ".txt";
-	const char* stufile = temp.c_str();
+	student.Login();						// 登录，获取学号与姓名
+	string temp = student.stuid + ".txt";	// 该学生选课文件，以学号命名
+	const char* stufile = temp.c_str();		// string 转 const char*
 	Course stucourse(stufile);
 	while (1)
 	{
@@ -142,7 +139,7 @@ void StuMenu(Course& course)
 		cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 
 		int choice;
-	inputChoice:
+	inputChoice:		// 下方有两处goto调用此处
 		cin >> choice;
 		if (CheckInput(cin))
 			goto inputChoice;
@@ -154,36 +151,33 @@ void StuMenu(Course& course)
 			while (x)
 			{
 				OperationMenu("学生", "查看课程");
-				student.Display(course, stucourse);
+				student.Display(course, stucourse, filename, stufile);
 				cout << "\n还需要继续查看吗？(1. 继续；0. 返回学生主界面)";
-			inputX:
-				cin >> x;
-				if (CheckInput(cin))
-					goto inputX;
+				InputBool(x);
 				system("cls");
 			}
 			break;
 		}
 		case 2:
 			OperationMenu("学生", "查找课程");
-			course.Find();
+			course.Find(filename);
 			system("cls");
 			break;
 		case 3:
 			OperationMenu("学生", "选课");
-			student.SelectCourse(course, stucourse);
+			student.SelectCourse(course, stucourse, filename, stufile);
 			system("cls");
 			break;
 		case 4:
 			OperationMenu("学生", "退课");
-			student.DisselectCourse(stucourse);
+			student.DisselectCourse(stucourse, stufile);
 			system("cls");
 			break;
 		case 0:
 			return;
 		default:
 			cout << "请输入数字0~4，其他数字无效。" << endl;
-			goto inputChoice;
+			goto inputChoice;			// 同AdminMenu()，使用goto
 		}
 	}
 }
@@ -198,6 +192,3 @@ void OperationMenu(const char* usr, const char* optname)
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 }
-
-
-

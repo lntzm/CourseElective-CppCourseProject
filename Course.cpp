@@ -13,11 +13,11 @@ CourseNode::~CourseNode()
 
 Course::Course(const char* filename)
 {
-	m_head = new CourseNode;
-	m_head->next = NULL;			// 申请内存，初始化链表
 	ifstream ifs(filename);
 	if (!ifs)						// 文件不存在，创建文件
 	{
+		m_head = new CourseNode;
+		m_head->next = NULL;			// 申请内存，初始化链表
 		cout << "未发现"<<filename<<"！系统将自动创建此文件" << endl;
 		WriteFile(filename);
 		cout << filename << "创建成功!\n" << endl;
@@ -65,6 +65,8 @@ void Course::WriteFile(const char* filename)
 
 void Course::ReadFile(const char* filename)	
 {
+	m_head = new CourseNode;
+	m_head->next = NULL;			// 申请内存，初始化链表
 	ifstream ifs(filename);
 	if (!ifs)
 	{
@@ -93,28 +95,18 @@ void Course::ReadFile(const char* filename)
 
 istream& operator >> (istream& input, CourseNode& node)		// 重载，用于输入CourseNode类，语法糖
 {
-inputId:
-	cout << "请输入课程编号："; input >> node.id;
-	if (CheckInput(input))
-		goto inputId;
+	cout << "请输入课程编号："; InputInt(input, node.id);
 	cout << "请输入课程名称："; input >> node.name;
 	cout << "请输入课程性质："; input >> node.property;
-inputTotaltime:
-	cout << "请输入总学时："; input >> node.totaltime;
-	if (CheckInput(input))
-		goto inputTotaltime;
-inputClasstime:
-	cout << "请输入授课学时："; input >> node.classtime;
-	if (CheckInput(input))
-		goto inputClasstime;
-inputLabtime:
-	cout << "请输入实验或上机学时："; input >> node.labtime;
-	if (CheckInput(input))
-		goto inputLabtime;
-inputCredits:
-	cout << "请输入学分："; input >> node.credits;
-	if (CheckInput(input))
-		goto inputCredits;
+	cout << "请输入总学时："; InputInt(input,node.totaltime);
+	cout << "请输入授课学时："; InputInt(input, node.classtime);
+	cout << "请输入实验或上机学时："; InputInt(input, node.labtime);
+	cout << "请输入学分：";
+	while (1)
+	{
+		input >> node.credits;
+		if (!CheckInput(input)) break;
+	}
 	cout << "请输入开课学期："; input >> node.semester;
 	return input;
 }
@@ -128,21 +120,9 @@ ostream& operator << (ostream& output, CourseNode& node)	// 重载，用于输出Course
 	return output;
 }
 
-bool CheckInput(istream& input)
+void Course::Display(const char* filename)
 {
-	if (!input.good())		// 类型不对则清除缓冲区，否则cin无法输入，进入死循环
-	{
-		input.clear();
-		input.ignore(1024, '\n');		// 将输入的回车前或1024个字符缓冲区清除
-		// input.sync();				// VS2019编译器cin.sync()无法清除缓冲区
-		cout << "输入字符不合法，请重试。" << endl;
-		return 1;
-	}
-	return 0;				// 输入正确，返回false
-}
-
-void Course::Display()
-{
+	ReadFile(filename);				// 读取文件，更新状态
 	DisplayTitle();
 	CourseNode* currentNode = m_head->next;
 	while (currentNode != NULL)		// 遍历链表，输出
@@ -175,22 +155,17 @@ void Course::AddCourse(const char* filename)
 		m_head->next = newNode;
 		newNode->next = temp;						// 将newNode插在链表的头
 		cout << "还要继续添加吗？（0. 不添加了；1. 继续添加）" << endl;
-	inputX1:
-		cin >> x;
-		if (CheckInput(cin))
-			goto inputX1;
+		InputBool(x);								// x为true时继续循环，false退出循环
 	}
 	cout << "添加完成，是否保存？（0. 不保存；1. 保存）" << endl;
-inputX2:
-	cin >> x;
-	if (CheckInput(cin))
-		goto inputX2;
-	if (x)						// 是否写入文件，即保存数据
+	InputBool(x);									// 是否写入文件，即保存数据
+	if (x)
 		WriteFile(filename);
 }
 
-void Course::Find()
+void Course::Find(const char* filename)
 {
+	ReadFile(filename);					// 读取文件，更新状态
 	int choice;
 	bool x = 1;
 	while (x)
@@ -202,7 +177,7 @@ void Course::Find()
 			 << "7. 按学分    \t 8.按开课学期\n"
 			 << "0. 不查找了，返回" << endl;
 	inputChoice:
-		cin >> choice;				// 选择查找方式
+		cin >> choice;					// 选择查找方式
 		if (CheckInput(cin))			
 			goto inputChoice;
 		switch (choice)
@@ -211,13 +186,13 @@ void Course::Find()
 			return;
 		case 1:
 			FindEditDelById(0, "");
-			// 跳过下方输出语句，继续循环
-			continue;				// break是对swtich，continue是对while
+			// break是对swtich，continue是对while
+			continue;					// 跳过下方输出语句，继续循环
 		case 2:
 			FindMenu("按课程名称");
 			FindInString(choice, "课程名称");
 			break;
-		case 3: 
+		case 3:
 			FindMenu("按课程性质");
 			FindInString(choice, "课程性质");
 			break;
@@ -248,11 +223,7 @@ void Course::Find()
 			goto inputChoice;			// 重新输入
 		}
 		cout << "\n查找完毕，还需要继续查找吗？（0. 返回；1. 继续查找）" << endl;
-	inputX:
-		cin >> x;					// x为true时继续循环，false退出循环
-		if (CheckInput(cin))
-			goto inputX;
-
+		InputBool(x);				// x为true时继续循环，false退出循环
 	}
 }
 
@@ -269,6 +240,7 @@ void Course::FindMenu(const char* optname)
 
 void Course::FindEditDelById(int n, const char* filename)
 {
+	ReadFile(filename);				// 读取文件，更新状态
 	bool x = 1;
 	const char* optname;
 	switch (n)
@@ -285,34 +257,26 @@ void Course::FindEditDelById(int n, const char* filename)
 		bool flag = 1;		// 标志位，判断是否找到了数据
 		int input;
 		CourseNode* currentNode = m_head->next, * temp = m_head;
-		
 		cout << "请输入要" << optname << "的课程编号：（输入0查看所有课程）";
-	inputInput:				
-		cin >> input;
-		if (CheckInput(cin))
-			goto inputInput;
+		InputInt(cin, input);
 		if (!input)
 		{
-			Course::Display();
+			Course::Display(filename);
 			cout << "现在请输入要" << optname << "的课程编号：";
-			goto inputInput;
+			InputInt(cin, input);
 		}
 		DisplayTitle();
-		while (currentNode != NULL)
+		while (currentNode != NULL)		// 遍历链表
 		{
-			if (currentNode->id == input)
+			if (currentNode->id == input)	// 找到对应课程 
 			{
 				flag = 0;
 				cout << *currentNode << endl;
-
 				if (n == 1)			// 编辑课程
 				{
 					bool y;
 					cout << "\n确认要编辑该课程吗？（0. 否；1. 确认编辑）";
-				inputY1:
-					cin >> y;
-					if (CheckInput(cin))
-						goto inputY1;
+					InputBool(y);
 					if (y)
 					{
 						Edit(currentNode);
@@ -324,10 +288,7 @@ void Course::FindEditDelById(int n, const char* filename)
 				{
 					bool y;
 					cout << "\n确认要删除该课程吗？（0. 否；1. 确认删除）";
-				inputY2:
-					cin >> y;
-					if (CheckInput(cin))
-						goto inputY2;
+					InputBool(y);
 					if (y)
 					{
 						temp->next = currentNode->next;
@@ -338,22 +299,18 @@ void Course::FindEditDelById(int n, const char* filename)
 				}
 			}
 			temp = currentNode;
-			currentNode = currentNode->next;
+			currentNode = currentNode->next;		// 指向下一个节点
 		}
-		if (flag)
+		if (flag)									// 遍历完没找到
 			cout << "\n未找到编号为" << input << "的这门课!" << endl;
-		if (!n)
+		if (!n)										// 查找模式
 			cout << "\n查找完毕，还需要继续按课程编号进行查找吗？"
 			<< "（0. 返回选择查找方式；1. 继续查找课程编号）" << endl;
-		else
+		else										// 编辑、删除模式
 		cout << "\n当前操作已完成，还需要继续" << optname
 			<< "吗？（0. 返回；1. 继续" << optname << "）" << endl;
-	inputX:
-		cin >> x;
-		if (CheckInput(cin))
-			goto inputX;
+		InputBool(x);				// true继续循环，false退出循环
 	}
-	
 }
 
 void Course::FindInInt(int choice, const char* optname)
@@ -362,57 +319,27 @@ void Course::FindInInt(int choice, const char* optname)
 	int input;
 	CourseNode* currentNode = m_head->next, * temp = m_head;
 	cout << "请输入要查找的"<<optname<<"：";
-inputInput:
-	cin >> input;
-	if (CheckInput(cin))
-		goto inputInput;
+	InputInt(cin, input);
 	DisplayTitle();
-	while (currentNode != NULL)
+	int method;
+	while (currentNode != NULL)		// 遍历链表查找
 	{
 		switch (choice)
 		{
-		case 1:
-			if (currentNode->id == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
-
-		case 4:
-			if (currentNode->totaltime == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
-
-		case 5:
-			if (currentNode->classtime == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
-
-		case 6:
-			if (currentNode->labtime == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
+		case 1: method = currentNode->id; break;
+		case 4: method = currentNode->totaltime; break;
+		case 5: method = currentNode->classtime; break;
+		case 6: method = currentNode->labtime; break;
 		}
+		if (method == input)	// 找到则输出
+		{
+			flag = 0;
+			cout << *currentNode << endl;
+		}
+		temp = currentNode;
+		currentNode = currentNode->next;
 	}
-	if (flag)
+	if (flag)					// 遍历完成，未找到
 		cout << "\n未找到"<<optname<<"为" << input << "的这门课!" << endl;
 }
 
@@ -422,16 +349,17 @@ void Course::FindInFloat(int choice, const char* optname)
 	float input;
 	CourseNode* currentNode = m_head->next, * temp = m_head;
 	cout << "请输入要查找的" << optname << "：";
-inputInput:
-	cin >> input;
-	if (CheckInput(cin))
-		goto inputInput;
-	DisplayTitle();
-	if (choice != 7)
-		return;
-	while (currentNode != NULL)
+	while (1)
 	{
-		if (currentNode->credits == input)
+		cin >> input;
+		if (!CheckInput(cin)) break;
+	}
+	DisplayTitle();
+	if (choice != 7)		// float类型只有学分，校验choice是否为7，不是则return
+		return;
+	while (currentNode != NULL)					// 遍历链表查找
+	{
+		if (currentNode->credits == input)		// 找到则输出
 		{
 			flag = 0;
 			cout << *currentNode << endl;
@@ -439,10 +367,8 @@ inputInput:
 		temp = currentNode;
 		currentNode = currentNode->next;
 	}
-	if (flag)
-	{
+	if (flag)									// 遍历完成，未找到
 		cout << "\n未找到" << optname << "为" << input << "的这门课!" << endl;
-	}
 }
 
 void Course::FindInString(int choice, const char* optname)
@@ -453,42 +379,25 @@ void Course::FindInString(int choice, const char* optname)
 	cout << "请输入要查找的" << optname << "：";
 	cin >> input;
 	DisplayTitle();
+	string method;
 	while (currentNode != NULL)
 	{
 		switch (choice)
 		{
-		case 2:
-			if (currentNode->name == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
-
-		case 3:
-			if (currentNode->property == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
-
-		case 8:
-			if (currentNode->semester == input)
-			{
-				flag = 0;
-				cout << *currentNode << endl;
-			}
-			temp = currentNode;
-			currentNode = currentNode->next;
-			break;
+		case 2: method = currentNode->name; break;
+		case 4: method = currentNode->totaltime; break;
+		case 5: method = currentNode->classtime; break;
+		case 6: method = currentNode->labtime; break;
 		}
+		if (method == input)		// 找到则输出
+		{ 
+ 			flag = 0;
+			cout << *currentNode << endl;
+		}
+		temp = currentNode;
+		currentNode = currentNode->next;
 	}
-	if (flag)
+	if (flag)								// 遍历完成，未找到
 	{
 		cout << "未找到" << optname << "为" << input << "的这门课!" << endl;
 	}
@@ -511,6 +420,7 @@ void Course::Edit(CourseNode* currentNode)
 		cin >> choice;
 		if (CheckInput(cin))
 			goto inputChoice;
+		// 将要编辑的内容写入currentNode
 		switch (choice)
 		{
 		case 0:
@@ -518,10 +428,7 @@ void Course::Edit(CourseNode* currentNode)
 
 		case 1:
 			EditMenu(currentNode->id, "课程编号");
-		inputId:
-			cout << "请输入课程编号："; cin >> currentNode->id;
-			if (CheckInput(cin))
-				goto inputId;
+			cout << "请输入课程编号："; InputInt(cin,currentNode->id);
 			break;
 
 		case 2:
@@ -536,34 +443,27 @@ void Course::Edit(CourseNode* currentNode)
 
 		case 4:
 			EditMenu(currentNode->id, "总学时");
-		inputTotaltime:
-			cout << "请输入总学时："; cin >> currentNode->totaltime;
-			if (CheckInput(cin))
-				goto inputTotaltime;
+			cout << "请输入总学时："; InputInt(cin, currentNode->totaltime);
 			break;
 
 		case 5:
 			EditMenu(currentNode->id, "授课学时");
-		inputClasstime:
-			cout << "请输入授课学时："; cin >> currentNode->classtime;
-			if (CheckInput(cin))
-				goto inputClasstime;
+			cout << "请输入授课学时："; InputInt(cin, currentNode->classtime);
 			break;
 
 		case 6:
 			EditMenu(currentNode->id, "实验学时");
-		inputLabtime:
-			cout << "请输入实验或上机学时："; cin >> currentNode->labtime;
-			if (CheckInput(cin))
-				goto inputLabtime;
+			cout << "请输入实验或上机学时："; InputInt(cin, currentNode->labtime);
 			break;
 
 		case 7:
 			EditMenu(currentNode->id, "学分");
-		inputCredits:
-			cout << "请输入学分："; cin >> currentNode->credits;
-			if (CheckInput(cin))
-				goto inputCredits;
+			cout << "请输入学分："; 
+			while (1)
+			{
+				cin >> currentNode->credits;
+				if (!CheckInput(cin)) break;
+			}
 			break;
 
 		case 8:
@@ -578,10 +478,7 @@ void Course::Edit(CourseNode* currentNode)
 			goto inputChoice;			// 重新输入
 		}
 		cout << "\n已完成当前项的编辑，还需要编辑其他项吗？（0. 不需要；1. 需要）" << endl;
-	inputX:
-		cin >> x;
-		if (CheckInput(cin))
-			goto inputX;
+		InputBool(x);
 	}
 }
 
@@ -590,8 +487,42 @@ void Course::EditMenu(int id, const char* optname)
 	system("cls");
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
-	cout << "\t\t\t▏当前位置：用户>编辑课程>" << setw(9) << id << "<"
+	cout << "\t\t\t▏当前位置：管理员>编辑课程>" << setw(9) << id << ">"
 		<< setw(8) << optname << " ▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
+}
+
+bool CheckInput(istream& input)
+{
+	if (!input.good())		// 类型不对则清除缓冲区，否则cin无法输入，进入死循环
+	{
+		input.clear();
+		input.ignore(1024, '\n');		// 将输入的回车前或1024个字符缓冲区清除
+		// input.sync();				// VS2019编译器cin.sync()无法清除缓冲区
+		cout << "输入字符不合法，请重试。" << endl;
+		return 1;
+	}
+	return 0;				// 输入正确，返回false
+}
+
+void InputBool(bool& x)
+{
+	while (1)
+	{
+		cin >> x;
+		if (!CheckInput(cin))		// 检查输入数据的类型是否正确，否则重新输入
+			break;
+	}
+}
+
+void InputInt(istream& input, int& x)
+{
+	// 为方便重载>>时调用此函数，传参intream&
+	while (1)
+	{
+		input >> x;
+		if (!CheckInput(cin))		// 检查输入数据的类型是否正确，否则重新输入
+			break;
+	}
 }
