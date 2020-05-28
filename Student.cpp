@@ -40,12 +40,10 @@ inputChoice:
 
 void Student::SelectCourse(Course& course, Course& stucourse, const char* filename, const char* stufile)
 {
-	stucourse.ReadFile(stufile);				// 读取文件，刷新链表
+	//stucourse.ReadFile(stufile);				// 读取文件，刷新链表
 	bool x = 1;
 	while (x)
 	{
-		CourseNode* currentCourseNode = course.m_head->next;
-		CourseNode* temp = course.m_head;
 		int input;
 		bool flag = 1;						// 标志位
 		cout << "请输入您想要选课的课程编号：（输入0可查看所有课程）";
@@ -56,6 +54,8 @@ void Student::SelectCourse(Course& course, Course& stucourse, const char* filena
 			cout << "现在请输入您想要选课的课程编号：";
 			InputInt(cin, input);
 		}
+		CourseNode* currentCourseNode = course.m_head->next;
+		CourseNode* temp = course.m_head;
 		while (currentCourseNode != NULL)
 		{
 			if (currentCourseNode->id == input)			// 找到此课程，输出
@@ -95,14 +95,11 @@ void Student::SelectCourse(Course& course, Course& stucourse, const char* filena
 	}
 }
 
-void Student::DisselectCourse(Course& stucourse, const char* stufile)
+void Student::UnselectCourse(Course& stucourse, const char* stufile)
 {
-	stucourse.ReadFile(stufile);			// 读取文件，刷新链表
 	bool x = 1;
 	while (x)
 	{
-		CourseNode* currentNode = stucourse.m_head->next;
-		CourseNode* temp = stucourse.m_head;
 		int input;
 		bool flag = 1;
 		cout << "请输入您想要退选的课程编号：（输入0可查看所有您已选课程）";
@@ -113,6 +110,8 @@ void Student::DisselectCourse(Course& stucourse, const char* stufile)
 			cout << "现在请输入您想要退选的课程编号：";
 			InputInt(cin, input);
 		}
+		CourseNode* currentNode = stucourse.m_head->next;
+		CourseNode* temp = stucourse.m_head;
 		while (currentNode != NULL)
 		{
 			if (currentNode->id == input)		// 找到此课程输出，并break

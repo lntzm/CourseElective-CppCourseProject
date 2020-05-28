@@ -170,7 +170,7 @@ void StuMenu(Course& course, const char* filename)
 			break;
 		case 4:
 			OperationMenu("Ñ§Éú", "ÍË¿Î");
-			student.DisselectCourse(stucourse, stufile);
+			student.UnselectCourse(stucourse, stufile);
 			system("cls");
 			break;
 		case 0:

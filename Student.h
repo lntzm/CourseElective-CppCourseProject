@@ -10,7 +10,7 @@ public:
 	void Login();				// 登录，获取学号与姓名
 	void Display(Course&, Course&, const char*, const char*);		// 学生界面的显示课程
 	void SelectCourse(Course&, Course&, const char*, const char*);	// 选课
-	void DisselectCourse(Course&, const char*);			// 退课
+	void UnselectCourse(Course&, const char*);			// 退课
 };
 
 

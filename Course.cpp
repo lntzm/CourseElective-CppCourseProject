@@ -6,6 +6,7 @@ CourseNode::CourseNode()
 {
 	next = NULL;
 }
+
 CourseNode::~CourseNode()
 {
 	next = NULL;
@@ -91,6 +92,7 @@ void Course::ReadFile(const char* filename)
 		p->next = NULL;
 		temp = p;				// 指向下一节点
 	}
+	ifs.close();
 }
 
 istream& operator >> (istream& input, CourseNode& node)		// 重载，用于输入CourseNode类，语法糖
@@ -233,14 +235,13 @@ void Course::FindMenu(const char* optname)
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▏当前位置：用户>查找课程>" 
-		<<setw(10)<< optname << "        ▕" << endl;
+		<<setw(10)<< optname << "          ▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 }
 
 void Course::FindEditDelById(int n, const char* filename)
 {
-	ReadFile(filename);				// 读取文件，更新状态
 	bool x = 1;
 	const char* optname;
 	switch (n)
@@ -254,21 +255,21 @@ void Course::FindEditDelById(int n, const char* filename)
 	{
 		if (!n)			// n == 0，查找模式
 			FindMenu("按课程编号");
-		bool flag = 1;		// 标志位，判断是否找到了数据
 		int input;
-		CourseNode* currentNode = m_head->next, * temp = m_head;
 		cout << "请输入要" << optname << "的课程编号：（输入0查看所有课程）";
 		InputInt(cin, input);
 		if (!input)
 		{
-			Course::Display(filename);
+			Display(filename);
 			cout << "现在请输入要" << optname << "的课程编号：";
 			InputInt(cin, input);
 		}
+		bool flag = 1;		// 标志位，判断是否找到了数据
+		CourseNode* currentNode = m_head->next, * temp = m_head;
 		DisplayTitle();
 		while (currentNode != NULL)		// 遍历链表
 		{
-			if (currentNode->id == input)	// 找到对应课程 
+			if (currentNode->id == input)	// 找到对应课程
 			{
 				flag = 0;
 				cout << *currentNode << endl;
@@ -385,9 +386,8 @@ void Course::FindInString(int choice, const char* optname)
 		switch (choice)
 		{
 		case 2: method = currentNode->name; break;
-		case 4: method = currentNode->totaltime; break;
-		case 5: method = currentNode->classtime; break;
-		case 6: method = currentNode->labtime; break;
+		case 3: method = currentNode->property; break;
+		case 8: method = currentNode->semester; break;
 		}
 		if (method == input)		// 找到则输出
 		{ 
@@ -488,7 +488,7 @@ void Course::EditMenu(int id, const char* optname)
 	cout << "\t\t\t▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▏当前位置：管理员>编辑课程>" << setw(9) << id << ">"
-		<< setw(8) << optname << " ▕" << endl;
+		<< setw(8) << optname << "▕" << endl;
 	cout << "\t\t\t▏                                            ▕" << endl;
 	cout << "\t\t\t▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔" << endl;
 }
