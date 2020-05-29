@@ -1,3 +1,11 @@
+/*
+* 项目名称：		学生选修课程系统
+* 作者：			刘知航
+* 学号：			201836061122
+* 创建时间：		2020-5-2
+* 最后编辑时间：	2020-5-29
+*/
+
 #include "Course.h"
 #include "Student.h"
 using namespace std;
